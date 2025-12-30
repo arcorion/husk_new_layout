@@ -44,3 +44,6 @@ class HuskontrollerApp(App):
     def build(self):
         Builder.load_file("gui.kv")
         return TouchPanel()
+
+if __name__ == '__main__':
+    HuskontrollerApp().run()

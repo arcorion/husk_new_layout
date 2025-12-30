@@ -7,31 +7,27 @@
             size: self.size
             source: 'images/background.png' 
     # Controls
-    BoxLayout:
-        pos: 25, 50
-        orientation: 'horizontal'
-        # Display buttons
-        BoxLayout:
-            orientation: 'vertical'
-            Label:
-                text: 'Display'
-            Button:
-            Button:
-            Button:
-            Button:
-        # Input buttons
-        BoxLayout:
-            orientation: 'vertical'
-            Label:
-                text: 'Input'
-            Button:
-            Button:
-            Button:
-            Button:
-        # Audio slider and button(s)
-        BoxLayout:
-            Label:
-                text: 'Audio'
-            Slider:
-            Button:
-            Button: 
+    Label:
+        pos: 25, 350
+        size: 172, 66
+        size_hint: None, None
+        text: 'Display'
+#    Button:
+#        size_hint: None, None
+#    Button:
+#        size_hint: None, None
+#    Button:
+#        size_hint: None, None
+#    # Input buttons
+#    Label:
+#        size_hint: None, None
+#        text: 'Input'
+#    Button:
+#    Button:
+#    Button:
+#    # Audio slider and Mute
+#    Label:
+#        text: 'Audio'
+#    Slider:
+#    Button:
+#    Button:
