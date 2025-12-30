@@ -36,3 +36,11 @@ match operating_system:
 class TouchPanel(FloatLayout):
     def __init__(self, **kwargs):
         super(TouchPanel, self).__init__(**kwargs)
+
+class HuskontrollerApp(App):
+    def __init__(self, **kwargs):
+        super(HuskontrollerApp, self).__init__()
+
+    def build(self):
+        Builder.load_file("gui.kv")
+        return TouchPanel()
