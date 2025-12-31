@@ -1,3 +1,6 @@
+#:import Clock kivy.clock.Clock
+#:import threading threading
+#:import partial functools.partial
 <Touchpanel>:
     canvas:
         Color:
@@ -21,26 +24,33 @@
             Button:
                 background_normal: 'images/labels/display-label.png'
                 background_down: 'images/labels/display-label.png'
+                id: display_label
                 #size: 172, 66
                 #size_hint: None, None
             ToggleButton:
                 background_normal: 'images/buttons/off/projectoron.png'
                 background_down: 'images/buttons/on/projectoron.png'
+                id: power_on
                 #size: 172, 66
                 #size_hint: None, None
             ToggleButton:
                 background_normal: 'images/buttons/off/projectoroff.png'
                 background_down: 'images/buttons/on/projectoroff.png'
+                id: power_off
                 #size: 172, 66
                 #size_hint: None, None
             ToggleButton:
                 background_normal: 'images/buttons/off/blank.png'
                 background_down: 'images/buttons/on/blank.png'
+                id: blank 
+                state: 'down' if app.image.blanked else 'normal'
                 #size: 172, 66
                 #size_hint: None, None
             ToggleButton:
                 background_normal: 'images/buttons/off/freeze.png'
                 background_down: 'images/buttons/on/freeze.png'
+                id: freeze
+                state: 'down' if app.image.frozen else 'normal'
                 #size: 172, 66
         # Input
         BoxLayout:
@@ -49,18 +59,27 @@
             Button:
                 background_normal: 'images/labels/input-label.png'
                 background_down: 'images/labels/input-label.png'
+                id: input_label
             ToggleButton:
                 background_normal: 'images/buttons/off/podium.png'
                 background_down: 'images/buttons/on/podium.png'
+                id: podium
+                state: 'down' if app.input.input == 0 else 'normal'
             ToggleButton:
                 background_normal: 'images/buttons/off/usbc.png'
                 background_down: 'images/buttons/on/usbc.png'
+                id: usbc
+                state: 'down' if app.input.input == 2 else 'normal'
             ToggleButton:
                 background_normal: 'images/buttons/off/hdmi.png'
                 background_down: 'images/buttons/on/hdmi.png'
+                id: hdmi
+                state: 'down' if app.input.input == 1 else 'normal'
             ToggleButton:
                 background_normal: 'images/buttons/off/vga.png'
                 background_down: 'images/buttons/on/vga.png'
+                id: vga
+                state: 'down' if app.input.input == 3 else 'normal'
         # Audio
         BoxLayout:
             orientation: 'vertical'

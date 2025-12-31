@@ -21,6 +21,8 @@ from random import choice
 from time import sleep
 import platform, threading
 
+from components.sound import Sound
+
 operating_system = platform.system()
 match operating_system:
     case 'Linux':
@@ -33,17 +35,34 @@ match operating_system:
     case _:
         Exception("Not a supported OS")
 
+class DefaultButton(ToggleButton):
+    """
+    Describes the default settings for buttons in Huskontroller.
+    """
+    def __init__(self, **kwargs):
+        super(DefaultButton, self).__init__(**kwargs)
+
+
+
 class TouchPanel(FloatLayout):
     def __init__(self, **kwargs):
         super(TouchPanel, self).__init__(**kwargs)
 
+
 class HuskontrollerApp(App):
-    def __init__(self, **kwargs):
+    def __init__(self, components_dictionary):
         super(HuskontrollerApp, self).__init__()
+        self.image = components_dictionary["image"]
+        self.input = components_dictionary["input"]
+        self.projector = components_dictionary["projector"]
+        self.sound = components_dictionary["sound"]
+        self.controller = components_dictionary["controller"]
+        self.controller.set_initial_state()
 
     def build(self):
         Builder.load_file("gui.kv")
         return TouchPanel()
+
 
 if __name__ == '__main__':
     HuskontrollerApp().run()
