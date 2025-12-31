@@ -90,13 +90,14 @@
         # Audio
         BoxLayout:
             orientation: 'vertical'
-            spacing: 20
+            spacing: 40
             Button:
                 background_normal: 'images/labels/audio-label.png'
                 background_down: 'images/labels/audio-label.png'
-                size_hint: 1, 0.17
+                size_hint: 1, 0.2
             Slider:
-                color: [111/255, 111/255, 111/255, 1]
+                background_vertical: 'images/slider/slider-background.png'
+                background_width: 4
                 cursor_height: 21
                 cursor_image: 'images/slider/cursor.png'
                 cursor_width: 21
@@ -105,7 +106,7 @@
                 max: 100
                 on_value: app.sound.set_volume(int(self.value))
                 orientation: 'vertical'
-                size_hint: 1, 0.66
+                size_hint: 1, 0.6
                 step: 1
                 value: app.sound.volume
                 value_track: True
@@ -115,6 +116,5 @@
                 background_down: 'images/buttons/on/unmute.png'
                 id: mute
                 on_state: app.sound.set_mute() if (self.state == 'down') else app.sound.unset_mute()
-                size_hint: 1, 0.17
+                size_hint: 1, 0.2
                 state: 'down' if app.sound.mute else 'normal'
-            #size_hint: None, None
