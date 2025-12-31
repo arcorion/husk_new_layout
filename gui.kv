@@ -94,6 +94,7 @@
             Button:
                 background_normal: 'images/labels/audio-label.png'
                 background_down: 'images/labels/audio-label.png'
+                id: audio_label
                 size_hint: 1, 0.2
             Slider:
                 background_vertical: 'images/slider/slider-background.png'
@@ -111,10 +112,10 @@
                 value: app.sound.volume
                 value_track: True
                 value_track_color: [0, 0, 0, 1]
-            ToggleButton:
+            MuteButton:
                 background_normal: 'images/buttons/off/mute.png'
                 background_down: 'images/buttons/on/unmute.png'
                 id: mute
-                on_state: app.sound.set_mute() if (self.state == 'down') else app.sound.unset_mute()
+                on_state: self.change_state(app)
                 size_hint: 1, 0.2
                 state: 'down' if app.sound.mute else 'normal'

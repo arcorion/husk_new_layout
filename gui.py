@@ -41,6 +41,21 @@ class InputButton(ToggleButton):
         self.allow_no_selection = False
 
 
+class MuteButton(ToggleButton):
+    def __init__(self, **kwargs):
+        super(MuteButton, self).__init__(**kwargs)
+    
+    def change_state(self, app):
+        if (self.state == 'down'):
+            app.sound.set_mute()
+            app.root.ids.audio_label.opacity = 0.5
+            app.root.ids.volume.opacity = 0.5
+        else:
+            app.sound.unset_mute()
+            app.root.ids.audio_label.opacity = 1.0
+            app.root.ids.volume.opacity = 1.0
+
+
 class PowerButton(ToggleButton):
     """
     Describes the default settings for buttons in Huskontroller.
@@ -110,6 +125,7 @@ class PowerPopup(Popup):
             self.dismiss()
         else:
             self.content.text = f"Powering {self.on_off_text}.\nInterface available in {self.seconds} seconds."
+
 
 class TouchPanel(FloatLayout):
     def __init__(self, **kwargs):
