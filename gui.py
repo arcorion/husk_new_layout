@@ -35,6 +35,12 @@ match operating_system:
     case _:
         Exception("Not a supported OS")
 
+class InputButton(ToggleButton):
+    def __init__(self, **kwargs):
+        super(InputButton, self).__init__(**kwargs)
+        self.allow_no_selection = False
+
+
 class PowerButton(ToggleButton):
     """
     Describes the default settings for buttons in Huskontroller.
@@ -42,6 +48,7 @@ class PowerButton(ToggleButton):
     def __init__(self, **kwargs):
         super(PowerButton, self).__init__(**kwargs)
         self.app = App.get_running_app()
+        self.allow_no_selection = False
 
     def call_unset_blank(self, timer):
         self.app.image.unset_blank()
