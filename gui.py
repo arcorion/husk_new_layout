@@ -72,6 +72,8 @@ class PowerOffButton(PowerButton):
         Clock.schedule_once(self.call_unset_blank, 1)
         Clock.schedule_once(self.call_unset_freeze, 1)
         threading.Thread(target=self.app.controller.turn_off_projector, daemon=True).start()
+        power_off_message = PowerPopup("off")
+        power_off_message.open()
 
 
 class PowerPopup(Popup):
