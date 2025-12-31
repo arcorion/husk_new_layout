@@ -51,6 +51,10 @@ class PowerButton(ToggleButton):
 
 
 class PowerOnButton(PowerButton):
+    def __init__(self, **kwargs):
+        super(PowerOnButton, self).__init__(**kwargs)
+        self.app = App.get_running_app()
+
     def start_projector(self):
         threading.Thread(target=self.app.controller.turn_on_projector, daemon=True).start()
         power_on_message = PowerPopup()
@@ -60,6 +64,10 @@ class PowerOnButton(PowerButton):
 
 
 class PowerOffButton(PowerButton):
+    def __init__(self, **kwargs):
+        super(PowerOffButton, self).__init__(**kwargs)
+        self.app = App.get_running_app()
+
     def stop_projector(self):
         Clock.schedule_once(self.call_unset_blank, 1)
         Clock.schedule_once(self.call_unset_freeze, 1)
