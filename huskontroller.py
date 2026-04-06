@@ -69,7 +69,7 @@ class Huskontroller(EventDispatcher):
         self.input.set_input("podium")
 
     def set_input_hdmi(self):
-        power_on = self._projector.get_power_state()
+        power_on = self.projector.get_power_state()
         if not power_on:
             self.turn_on_projector()
         self.input.set_input("hdmi")
