@@ -92,7 +92,7 @@ class Clock:
         Update the clock to reflect the time
         of the last state change.
         """
-        self._last_state_change = time.time()
+        self.last_state_change = time.time()
 
     def get_duration(self):
         """
