@@ -155,8 +155,8 @@ class HuskontrollerApp(App):
         """
         threading.Thread(target=self.controller.turn_on_projector, daemon=True).start()
         PowerPopup().open()
-        Clock.schedule_once(self.image.unset_blank, 10)
-        Clock.schedule_once(self.image.unset_freeze, 10)
+        Clock.schedule_once(lambda dt: self.image.unset_blank(), 10)
+        Clock.schedule_once(lambda dt: self.image.unset_freeze(), 10)
 
 
 if __name__ == '__main__':
