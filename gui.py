@@ -25,6 +25,12 @@ from components.sound import Sound
 
 UNSELECTED_OPACITY = 0.7
 SELECTED_OPACITY = 1.0
+INPUT_DISPLAY_NAMES = {
+    "podium": "Podium",
+    "hdmi": "HDMI",
+    "usbc": "USB-C",
+    "vga": "VGA"
+}
 
 operating_system = platform.system()
 match operating_system:
@@ -40,15 +46,15 @@ match operating_system:
 
 
 class HuskyButton(ToggleButton):
-	def __init__(self, **kwargs):
-		super(HuskyButton, self).__init__(**kwargs)
-		self.opacity = UNSELECTED_OPACITY
+    def __init__(self, **kwargs):
+        super(HuskyButton, self).__init__(**kwargs)
+        self.opacity = UNSELECTED_OPACITY
 
-	def on_state(self, *args):
-		if self.state == 'normal':
-			self.opacity = UNSELECTED_OPACITY
-		else:
-			self.opacity = SELECTED_OPACITY
+    def on_state(self, *args):
+        if self.state == 'normal':
+            self.opacity = UNSELECTED_OPACITY
+        else:
+            self.opacity = SELECTED_OPACITY
 
 class InputButton(HuskyButton):
     def __init__(self, **kwargs):
@@ -141,7 +147,7 @@ class PowerPopup(Popup):
         self.title_size = '36sp'
         
         if self.input_name:
-            self.message = f"Powering {self.on_off_text}.\nSwitching to {self.input_name.upper()}.\nInterface available in {self.seconds} seconds."
+            self.message = f"Powering {self.on_off_text}.\nSwitching to {INPUT_DISPLAY_NAMES.get(self.input_name)}.\nInterface available in {self.seconds} seconds."
         else:
             self.message = f"Powering {self.on_off_text}.\nInterface available in {self.seconds} seconds."
         self.content = Label(text=self.message, color=[0, 0, 0, 1], font_size='24sp', halign='center')
@@ -154,7 +160,7 @@ class PowerPopup(Popup):
             self.dismiss()
         else:
             if self.input_name:
-                self.content.text = f"Powering {self.on_off_text}.\nSwitching to {self.input_name.upper()}.\nInterface available in {self.seconds} seconds."
+                self.content.text = f"Powering {self.on_off_text}.\nSwitching to {INPUT_DISPLAY_NAMES.get(self.input_name)}.\nInterface available in {self.seconds} seconds."
             else:
                 self.content.text = f"Powering {self.on_off_text}.\nInterface available in {self.seconds} seconds."
 
