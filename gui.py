@@ -39,6 +39,12 @@ class InputButton(ToggleButton):
     def __init__(self, **kwargs):
         super(InputButton, self).__init__(**kwargs)
         self.allow_no_selection = False
+        self.app = App.get_running_app()
+    
+    def select_input(self, input_name):
+        if not self.app.projector.power_state:
+            self.app.start_projector()
+        getattr(self.app.controller, f'set_input_{input_name}')()
 
 
 class MuteButton(ToggleButton):
@@ -78,11 +84,7 @@ class PowerOnButton(PowerButton):
         self.app = App.get_running_app()
 
     def start_projector(self):
-        threading.Thread(target=self.app.controller.turn_on_projector, daemon=True).start()
-        power_on_message = PowerPopup()
-        power_on_message.open()
-        Clock.schedule_once(self.call_unset_blank, 10)
-        Clock.schedule_once(self.call_unset_freeze, 10)
+        self.app.start_projector()
 
 
 class PowerOffButton(PowerButton):
@@ -145,6 +147,16 @@ class HuskontrollerApp(App):
     def build(self):
         Builder.load_file("gui.kv")
         return TouchPanel()
+    
+    def start_projector(self):
+        """
+        Start the projector components - this is called by
+        power on and input switch buttons when the projector is off.
+        """
+        threading.Thread(target=self.controller.turn_on_projector, daemon=True).start()
+        PowerPopup().open()
+        Clock.schedule_once(self.image.unset_blank, 10)
+        Clock.schedule_once(self.image.unset_freeze, 10)
 
 
 if __name__ == '__main__':

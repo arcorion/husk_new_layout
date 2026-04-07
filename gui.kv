@@ -64,7 +64,7 @@
                 background_down: 'images/buttons/on/podium.png'
                 id: podium
                 group: 'input_buttons'
-                on_state: app.controller.set_input_podium() if (self.state == 'down') else print()
+                on_state: self.select_input("podium") if (self.state == 'down') else print()
                 state: 'down' if app.input.input == 0 else 'normal'
             InputButton:
                 background_normal: 'images/buttons/off/usbc.png'
@@ -72,21 +72,21 @@
                 id: usbc
                 group: 'input_buttons'
                 state: 'down' if app.input.input == 2 else 'normal'
-                on_state: app.controller.set_input_usbc() if (self.state == 'down') else print()
+                on_state: self.select_input("usbc") if (self.state == 'down') else print()
             InputButton:
                 background_normal: 'images/buttons/off/hdmi.png'
                 background_down: 'images/buttons/on/hdmi.png'
                 id: hdmi
                 group: 'input_buttons'
                 state: 'down' if app.input.input == 1 else 'normal'
-                on_state: app.controller.set_input_hdmi() if (self.state == 'down') else print()
+                on_state: self.select_input("hdmi") if (self.state == 'down') else print()
             InputButton:
                 background_normal: 'images/buttons/off/vga.png'
                 background_down: 'images/buttons/on/vga.png'
                 id: vga
                 group: 'input_buttons'
                 state: 'down' if app.input.input == 3 else 'normal'
-                on_state: app.controller.set_input_vga() if (self.state == 'down') else print()
+                on_state: self.select_input("vga") if (self.state == 'down') else print()
         # Audio
         BoxLayout:
             orientation: 'vertical'
