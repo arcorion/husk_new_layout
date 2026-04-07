@@ -13,9 +13,9 @@
     BoxLayout:
         cols: 3
         orientation: 'horizontal'
-        pos: 20, 50
+        pos: 15, 50
         rows: 5
-        size: 560, 400
+        size: 602, 430
         size_hint: None, None
         spacing: 20
         BoxLayout:
@@ -39,13 +39,13 @@
                 group: 'power_buttons'
                 on_state: self.stop_projector() if (self.state == 'down') else print()
                 state: 'down' if app.projector.power_state == False else 'normal'
-            ToggleButton:
+            HuskyButton:
                 background_normal: 'images/buttons/off/blank.png'
                 background_down: 'images/buttons/on/blank.png'
                 id: blank 
                 on_state: app.controller.turn_on_blank() if (self.state == 'down') else app.controller.turn_off_blank()
                 state: 'down' if app.image.blanked else 'normal'
-            ToggleButton:
+            HuskyButton:
                 background_normal: 'images/buttons/off/freeze.png'
                 background_down: 'images/buttons/on/freeze.png'
                 id: freeze

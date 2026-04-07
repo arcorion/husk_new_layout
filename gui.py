@@ -23,6 +23,9 @@ import platform, threading
 
 from components.sound import Sound
 
+UNSELECTED_OPACITY = 0.7
+SELECTED_OPACITY = 1.0
+
 operating_system = platform.system()
 match operating_system:
     case 'Linux':
@@ -35,7 +38,19 @@ match operating_system:
     case _:
         Exception("Not a supported OS")
 
-class InputButton(ToggleButton):
+
+class HuskyButton(ToggleButton):
+	def __init__(self, **kwargs):
+		super(HuskyButton, self).__init__(**kwargs)
+		self.opacity = UNSELECTED_OPACITY
+
+	def on_state(self, *args):
+		if self.state == 'normal':
+			self.opacity = UNSELECTED_OPACITY
+		else:
+			self.opacity = SELECTED_OPACITY
+
+class InputButton(HuskyButton):
     def __init__(self, **kwargs):
         super(InputButton, self).__init__(**kwargs)
         self.allow_no_selection = False
@@ -51,19 +66,25 @@ class InputButton(ToggleButton):
 class MuteButton(ToggleButton):
     def __init__(self, **kwargs):
         super(MuteButton, self).__init__(**kwargs)
+
+    def on_state(self, *args):
+        if self.state == 'normal':
+            self.opacity = SELECTED_OPACITY
+        else:
+            self.opacity = UNSELECTED_OPACITY
     
     def change_state(self, app):
         if (self.state == 'down'):
             app.sound.set_mute()
-            app.root.ids.audio_label.opacity = 0.5
-            app.root.ids.volume.opacity = 0.5
+            app.root.ids.audio_label.opacity = UNSELECTED_OPACITY
+            app.root.ids.volume.opacity = UNSELECTED_OPACITY
         else:
             app.sound.unset_mute()
-            app.root.ids.audio_label.opacity = 1.0
-            app.root.ids.volume.opacity = 1.0
+            app.root.ids.audio_label.opacity = SELECTED_OPACITY
+            app.root.ids.volume.opacity = SELECTED_OPACITY
 
 
-class PowerButton(ToggleButton):
+class PowerButton(HuskyButton):
     """
     Describes the default settings for buttons in Huskontroller.
     """
