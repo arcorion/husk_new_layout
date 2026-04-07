@@ -31,14 +31,11 @@ class Commander:
         }
 
         try:
-            port_list = list_ports.comports()
-            port_names = []
-            for port in port_list:
-                port_names += port
-            self._device = serial.Serial(port_names[0], 9600)
+            port_list = [p for p in list_ports.comports() if 'com0com' not in p.description.lower()]
+            self._device = serial.Serial(port_list[0].device, 9600, timeout=2)
             print(f'Device {self._device} created.')
-        except serial.SerialException:
-            print(f'Error opening connection to port: {port_list[0]}')
+        except (serial.SerialException, IndexError):
+            print(f'Error opening connection to serial port\nUsing test serial.')
             self._device = TestSerial()
 
 
@@ -61,3 +58,4 @@ class TestSerial:
 
     def write(self, command):
         output = 'Serial Out: ' + command.decode()
+        print(output)
