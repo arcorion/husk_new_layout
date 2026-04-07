@@ -123,12 +123,13 @@ class PowerOffButton(PowerButton):
 
 
 class PowerPopup(Popup):
-    def __init__(self, on_off_text="on", **kwargs):
+    def __init__(self, on_off_text="on", input_name=None, **kwargs):
         super(PowerPopup, self).__init__(**kwargs)
         self.app = App.get_running_app()
         self.auto_dismiss = False
         self.background = ''
         self.background_color = (232/255, 211/255, 162/255, 1)
+        self.input_name = input_name
         self.on_off_text = on_off_text
         self.seconds = self.app.controller.PROJECTOR_WAIT
         self.separator_color = [50/255, 0/255, 110/255, 1]
@@ -138,7 +139,11 @@ class PowerPopup(Popup):
         self.title_color = [0, 0, 0, 1]
         self.title_font = './fonts/open_sans_regular.ttf'
         self.title_size = '36sp'
-        self.message = f"Powering {self.on_off_text}.\nInterface available in {self.seconds} seconds."
+        
+        if self.input_name:
+            self.message = f"Powering {self.on_off_text}.\nSwitching to {self.input_name.upper()}.\nInterface available in {self.seconds} seconds."
+        else:
+            self.message = f"Powering {self.on_off_text}.\nInterface available in {self.seconds} seconds."
         self.content = Label(text=self.message, color=[0, 0, 0, 1], font_size='24sp', halign='center')
 
         Clock.schedule_interval(self.update_message, 1)
@@ -148,7 +153,10 @@ class PowerPopup(Popup):
         if self.seconds == 0:
             self.dismiss()
         else:
-            self.content.text = f"Powering {self.on_off_text}.\nInterface available in {self.seconds} seconds."
+            if self.input_name:
+                self.content.text = f"Powering {self.on_off_text}.\nSwitching to {self.input_name.upper()}.\nInterface available in {self.seconds} seconds."
+            else:
+                self.content.text = f"Powering {self.on_off_text}.\nInterface available in {self.seconds} seconds."
 
 
 class TouchPanel(FloatLayout):
@@ -175,8 +183,12 @@ class HuskontrollerApp(App):
         Start the projector components - this is called by
         power on and input switch buttons when the projector is off.
         """
+        # Guards against starting the projector twice if a button
+        # is pressed.
+        if self.projector.power_state:
+            return
         threading.Thread(target=self.controller.turn_on_projector, daemon=True).start()
-        PowerPopup().open()
+        PowerPopup(input_name=input_name).open()
         Clock.schedule_once(lambda dt: self.image.unset_blank(), 10)
         Clock.schedule_once(lambda dt: self.image.unset_freeze(), 10)
         if input_name:
