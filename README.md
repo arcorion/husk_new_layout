@@ -27,7 +27,7 @@ pyserial can be installed with pip on a dev machine:
 `pip install pyserial`
 
 In Pi OS, I believe it's installed by default. If not, you'll need to install from repo:
-sudo apt install python3-serial
+`sudo apt install python3-serial`
 
 This is similar with Kivy:
 `pip install kivy[base]`
