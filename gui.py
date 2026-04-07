@@ -43,8 +43,9 @@ class InputButton(ToggleButton):
     
     def select_input(self, input_name):
         if not self.app.projector.power_state:
-            self.app.start_projector()
-        getattr(self.app.controller, f'set_input_{input_name}')()
+            self.app.start_projector(input_name)
+        else:
+            getattr(self.app.controller, f'set_input_{input_name}')()
 
 
 class MuteButton(ToggleButton):
@@ -148,7 +149,7 @@ class HuskontrollerApp(App):
         Builder.load_file("gui.kv")
         return TouchPanel()
     
-    def start_projector(self):
+    def start_projector(self, input_name=None):
         """
         Start the projector components - this is called by
         power on and input switch buttons when the projector is off.
@@ -157,6 +158,8 @@ class HuskontrollerApp(App):
         PowerPopup().open()
         Clock.schedule_once(lambda dt: self.image.unset_blank(), 10)
         Clock.schedule_once(lambda dt: self.image.unset_freeze(), 10)
+        if input_name:
+            Clock.schedule_once(lambda dt: getattr(self.controller, f'set_input_{input_name}')(), self.controller.PROJECTOR_WAIT)
 
 
 if __name__ == '__main__':
