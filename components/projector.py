@@ -1,6 +1,8 @@
 from components.component import Component
+from kivy.clock import Clock
 from kivy.event import EventDispatcher
 from kivy.properties import BooleanProperty
+
 
 class Projector(Component, EventDispatcher):
     """
@@ -55,8 +57,8 @@ class Projector(Component, EventDispatcher):
         """
         match state:
             case "on":
-                self.power_state = True
+                Clock.schedule_once(lambda dt: setattr(self, 'power_state', True))
             case "off":
-                self.power_state = False
+                Clock.schedule_once(lambda dt: setattr(self, 'power_state', False))
             case _:
                 print("Error changing projector power state in Projector module.")
