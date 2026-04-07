@@ -31,6 +31,14 @@ class Image(Component, EventDispatcher):
         self.commander.send_command("disable_freeze")
         self.frozen = False
         self.set_clock()
+    
+    def reset_freeze(self):
+        """
+        Reset the freeze state in the software. Do not
+        send a serial command. Used to ensure the software
+        matches the hardware state when input is switched.
+        """
+        self.frozen = False
 
     def set_blank(self):
         """

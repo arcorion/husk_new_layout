@@ -66,24 +66,28 @@ class Huskontroller(EventDispatcher):
         power_on = self.projector.get_power_state()
         if not power_on:
             self.turn_on_projector()
+        self.image.reset_freeze()
         self.input.set_input("podium")
 
     def set_input_hdmi(self):
         power_on = self.projector.get_power_state()
         if not power_on:
             self.turn_on_projector()
+        self.image.reset_freeze()
         self.input.set_input("hdmi")
 
     def set_input_usbc(self):
         power_on = self.projector.get_power_state()
         if not power_on:
             self.turn_on_projector()
+        self.image.reset_freeze()
         self.input.set_input("usbc")
 
     def set_input_vga(self):
         power_on = self.projector.get_power_state()
         if not power_on:
             self.turn_on_projector()
+        self.image.reset_freeze()
         self.input.set_input("vga")
 
     def turn_on_blank(self):
