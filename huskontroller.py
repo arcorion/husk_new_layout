@@ -14,7 +14,7 @@ class Huskontroller(EventDispatcher):
     def __init__(self):
         self._commander = Commander()
         self.image = Image()
-        self.input = Input(self._commander)
+        self.input = Input()
         self.projector = Projector()
         self.sound = Sound()
 

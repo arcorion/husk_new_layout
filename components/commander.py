@@ -1,4 +1,6 @@
 import serial
+import threading
+
 from serial.tools import list_ports
 
 class Commander:
@@ -9,7 +11,21 @@ class Commander:
     It associates the commands themselves with a useful
     name for easy use in other methods.
     """
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls):
+        # This is new for me, so commenting - creating a new class instance
+        # This creates a singleton.
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
+    
     def __init__(self):
+        if self._initialized:
+            return
+        
         self.command_list = {
             'select_podium': '1!',
             'select_hdmi': '2!',
@@ -29,6 +45,7 @@ class Commander:
             'enable_audio': '0Z',
             'get_audio_status': 'Z'
         }
+        self._initialized = True
 
         try:
             port_list = [p for p in list_ports.comports() if 'com0com' not in p.description.lower()]

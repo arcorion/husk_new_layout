@@ -1,6 +1,8 @@
+from components.commander import Commander
 from components.component import Component
 from kivy.event import EventDispatcher
 from kivy.properties import BooleanProperty, NumericProperty
+
 
 class Input(Component, EventDispatcher):
     """
@@ -13,9 +15,9 @@ class Input(Component, EventDispatcher):
     INPUTS = ["podium", "hdmi", "usbc", "vga"]
     input = NumericProperty(0)
 
-    def __init__(self, commander):
+    def __init__(self):
         super(Input, self).__init__()
-        self.commander = commander
+        self.commander = Commander()
         
     def set_input(self, input):
         """
