@@ -1,11 +1,14 @@
 # Christopher Lee Crader - ccrader@uw.edu
 # Most of this was generated with Claude - I just corrected
 # a couple errors and made some modifications.
+import sys
 
 from commander import Commander
+from pathlib import Path
 from textual.app import App, ComposeResult
 from textual.widgets import Button, Footer, Header, Input, Label, ListItem, ListView, Log, Static
 from textual.containers import Horizontal, Vertical
+
 
 
 class SerialTesterApp(App):
@@ -50,6 +53,27 @@ class SerialTesterApp(App):
                 log.write_line(f"> (custom) {cmd!r}\n  Response: {response or '(none)'}")
                 inp.clear()
 
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        cmd = event.value.strip()
+        if cmd:
+            self.commander.send_command(cmd, custom=True)
+            response = self.commander.read_response()
+            (self.query_one("#output", Log)
+                .write_line(f"> (custom) {cmd!r}\n  Response: {response or '(none)'}"))
+            event.input.clear()
+
+    def on_list_view_selected(self, event: ListView.Selected) -> None:
+        cmd = event.item.name
+        self.commander.send_command(cmd)
+        response = self.commander.read_response()
+        (self.query_one("#output", Log)
+            .write_line(f"> {cmd}\n  Response: {response or '(none)'}"))
+
 
 if __name__ == "__main__":
+    if sys.prefix == sys.base_prefix:
+        print("Virtual env not active. Run:")
+        print("Make sure it's activated and install")
+        print("textual and pyserial inside.")
+        sys.exit(1)
     SerialTesterApp().run()
