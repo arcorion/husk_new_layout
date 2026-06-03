@@ -55,6 +55,13 @@ class Commander:
             print(f'Error opening connection to serial port\nUsing test serial.')
             self._device = TestSerial()
 
+    @property
+    def connection_status(self):
+        if isinstance(self._device, TestSerial):
+            return "No serial device found — using TestSerial"
+        else:
+            return f"Connected: {self._device.port} @ {self._device.baudrate} baud"
+
     def read_response(self):
         """
         Reads one line from the serial device, returning it. If nothing
