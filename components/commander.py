@@ -55,6 +55,15 @@ class Commander:
             print(f'Error opening connection to serial port\nUsing test serial.')
             self._device = TestSerial()
 
+    def read_response(self):
+        """
+        Reads one line from the serial device, returning it. If nothing
+        received, times out and returns None.
+        """
+        try:
+            return self._device.readline().decode().strip()
+        except Exception:
+            return None
 
     def send_command(self, command, custom=False):
         """
@@ -72,7 +81,12 @@ class Commander:
             print(f'Unsupported command: {command}')
 
 class TestSerial:
+    def __init__(self):
+        self._last_command = b''
 
+    def readline(self):
+        return b'Echo Last: ' + self._last_command
+    
     def write(self, command):
         output = 'Serial Out: ' + command.decode()
         print(output)
