@@ -1,3 +1,7 @@
+# Christopher Lee Crader - ccrader@uw.edu
+# Most of this was generated with Claude - I just corrected
+# a couple errors and made some modifications.
+
 from commander import Commander
 from textual.app import App, ComposeResult
 from textual.widgets import Button, Footer, Header, Input, Label, ListItem, ListView, Log, Static
