@@ -67,6 +67,15 @@ class SerialTesterApp(App):
         assert name is not None
         self._send_and_log(name)
 
+    def on_mount(self) -> None:
+        response = self.commander.read_response()
+        if response:
+            (self.query_one("#output", Log)
+                .write_line(f"[startup] {response}"))
+        else:
+            (self.query_one("#output", Log)
+                .write_line(f"[startup] No init message from device"))
+
     def _send_and_log(self, cmd: str, custom: bool = False) -> None:
         if custom:
             display = f"(custom) {cmd}"

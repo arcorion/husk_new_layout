@@ -89,11 +89,11 @@ class Commander:
 
 class TestSerial:
     def __init__(self):
-        self._last_command = b''
+        self._last_command = b'TestSerial Initialized'
 
     def readline(self):
         return b'Echo Last: ' + self._last_command
     
     def write(self, command):
-        output = 'Serial Out: ' + command.decode()
-        print(output)
+        self._last_command = command
+        print(command.decode())
