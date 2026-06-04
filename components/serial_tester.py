@@ -13,8 +13,15 @@ from textual.containers import Horizontal, Vertical
 
 class SerialTesterApp(App):
     CSS = """
+    Button {
+        margin: 0 2;
+    }
     ListView { border: solid purple; }
     Log { border: solid purple; }
+    #button_container {
+        align-horizontal: center;
+        height: auto;
+    }
     #status { border: solid gold; padding: 0 1; }
     """
 
@@ -30,44 +37,47 @@ class SerialTesterApp(App):
             yield Log(id="output")
         yield Static(self.commander.connection_status, id="status")
         yield Input(placeholder="Custom command...", id="custom_input")
-        yield Button("Send Selected", id="send_named")
-        yield Button("Send Custom", id="send_custom")
+        with Horizontal(id="button_container"):
+            yield Button("Send Command", id="send_command")
         yield Footer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        log = self.query_one("#output", Log)
         inp = self.query_one("#custom_input", Input)
+        custom_cmd = inp.value.strip()
 
-        if event.button.id == "send_named":
+        if custom_cmd:
+            self._send_and_log(custom_cmd, custom=True)
+            inp.clear()
+        else:
             lv = self.query_one("#command_list", ListView)
-            if lv.highlighted_child:
-                cmd = lv.highlighted_child.name
-                self.commander.send_command(cmd)
-                response = self.commander.read_response()
-                log.write_line(f"> {cmd}\n  Response: {response or '(none)'}")
-        elif event.button.id == "send_custom":
-            cmd = inp.value.strip()
-            if cmd:
-                self.commander.send_command(cmd, custom=True)
-                response = self.commander.read_response()
-                log.write_line(f"> (custom) {cmd!r}\n  Response: {response or '(none)'}")
-                inp.clear()
+            if not lv.highlighted_child:
+                return
+            name = lv.highlighted_child.name
+            assert name is not None
+            self._send_and_log(name)
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         cmd = event.value.strip()
         if cmd:
-            self.commander.send_command(cmd, custom=True)
-            response = self.commander.read_response()
-            (self.query_one("#output", Log)
-                .write_line(f"> (custom) {cmd!r}\n  Response: {response or '(none)'}"))
+            self._send_and_log(cmd, custom=True)
             event.input.clear()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
-        cmd = event.item.name
-        self.commander.send_command(cmd)
+        name = event.item.name
+        assert name is not None
+        self._send_and_log(name)
+
+    def _send_and_log(self, cmd: str, custom: bool = False) -> None:
+        if custom:
+            display = f"(custom) {cmd}"
+            self.commander.send_command(cmd, custom=True)
+        else:
+            raw = self.commander.command_list[cmd]
+            display = f"{cmd} → {raw!r}"
+            self.commander.send_command(cmd)
         response = self.commander.read_response()
         (self.query_one("#output", Log)
-            .write_line(f"> {cmd}\n  Response: {response or '(none)'}"))
+            .write_line(f"> {display}\n  Response: {response or '(none)'}"))
 
 
 if __name__ == "__main__":
