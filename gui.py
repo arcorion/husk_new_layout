@@ -63,10 +63,7 @@ class InputButton(HuskyButton):
         self.app = App.get_running_app()
     
     def select_input(self, input_name):
-        if not self.app.projector.power_state:
-            self.app.start_projector(input_name)
-        else:
-            getattr(self.app.controller, f'set_input_{input_name}')()
+        getattr(self.app.controller, f'set_input_{input_name}')()
 
 
 class MuteButton(ToggleButton):
