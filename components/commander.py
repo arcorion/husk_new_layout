@@ -2,7 +2,7 @@ import serial
 import threading
 import time
 
-from components.logger import get_logger
+from logger import get_logger
 from serial.tools import list_ports
 
 class Commander:
