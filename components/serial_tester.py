@@ -18,6 +18,7 @@ class SerialTesterApp(App):
     Button {
         margin: 0 2;
     }
+    Input { border: solid gold; }
     ListView { border: solid gold; }
     Log { border: solid purple; }
     #button_container {
