@@ -33,6 +33,7 @@ class SerialTesterApp(App):
 
         self.commander = Commander()
         yield Header()
+        yield Static(self.commander.connection_status, id="status")
         with Horizontal():
             with Vertical():
                 yield ListView(
@@ -41,7 +42,7 @@ class SerialTesterApp(App):
                 )
             yield Log(id="output")
             yield Log(id="stream")
-        yield Static(self.commander.connection_status, id="status")
+        
         yield Input(placeholder="Custom command...", id="custom_input")
         with Horizontal(id="button_container"):
             yield Button("Send Command", id="send_command")
