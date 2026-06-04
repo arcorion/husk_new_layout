@@ -93,7 +93,10 @@ class Commander:
         received, times out and returns None.
         """
         try:
-            return self._device.readline().decode().strip()
+            response = self._device.readline().decode().strip()
+            if response:
+                self.log.info(f"Received: '{response}'")
+            return response
         except Exception:
             return None
 
@@ -103,7 +106,10 @@ class Commander:
             return None
         try:
             self._device.write(raw_command.encode())
-            return self._device.readline().decode().strip()
+            response = self._device.readline().decode().strip()
+            if response:
+                self.log.info(f"Received: '{response}'")
+            return response
         except Exception:
             return None
         finally:
