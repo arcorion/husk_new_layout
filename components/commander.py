@@ -26,7 +26,9 @@ class Commander:
     def __init__(self):
         if self._initialized:
             return
-        
+
+        # When updating the command list, make sure to update command
+        # sources as well.
         self.command_list = {
             'select_podium': '1!',
             'select_hdmi': '2!',
@@ -45,6 +47,26 @@ class Commander:
             'disable_audio': '1Z',
             'enable_audio': '0Z',
             'get_audio_status': 'Z'
+        }
+
+        self.command_sources = {
+            'select_podium':      'switcher',
+            'select_hdmi':        'switcher',
+            'select_usbc':        'switcher',
+            'select_vga':         'switcher',
+            'view_current_input': 'switcher',
+            'enable_freeze':      'switcher',
+            'disable_freeze':     'switcher',
+            'get_freeze_status':  'switcher',
+            'disable_video':      'switcher',
+            'enable_video':       'switcher',
+            'get_video_status':   'switcher',
+            'enable_projector':   'projector',
+            'disable_projector':  'projector',
+            'get_volume':         'switcher',
+            'disable_audio':      'switcher',
+            'enable_audio':       'switcher',
+            'get_audio_status':   'switcher',
         }
         self._initialized = True
 
@@ -73,20 +95,33 @@ class Commander:
         except Exception:
             return None
 
+    def send_and_read(self, raw_command):
+        acquired = self._lock.acquire(blocking=False)
+        if not acquired:
+            return None
+        try:
+            self._device.write(raw_command.encode())
+            return self._device.readline().decode().strip()
+        except Exception:
+            return None
+        finally:
+            self._lock.release()
+
     def send_command(self, command, custom=False):
         """
         Takes a command string and sends the command as an
         encoded byte string to the Extron device.
         """
-        command_string = self.command_list.get(command)
-        if command_string:
-            self._device.write(command_string.encode())
-            print(f'Command sent: {command_string}')
-        elif custom == True:
-            self._device.write(command.encode())
-            print(f'Custom command sent: {command}')
-        else:
-            print(f'Unsupported command: {command}')
+        with self._lock:
+            command_string = self.command_list.get(command)
+            if command_string:
+                self._device.write(command_string.encode())
+                print(f'Command sent: {command_string}')
+            elif custom == True:
+                self._device.write(command.encode())
+                print(f'Custom command sent: {command}')
+            else:
+                print(f'Unsupported command: {command}')
 
 class TestSerial:
     _STREAM_MESSAGES = [b'Inp1\n', b'Vol063\n', b'JustTesting1\n']
@@ -100,6 +135,10 @@ class TestSerial:
     @property
     def in_waiting(self):
         return 1 if time.time() - self._last_stream_time >= self._MESSAGE_SECONDS else 0
+    
+    @property
+    def is_open(self):
+        return True
 
     def readline(self):
         if time.time() - self._last_stream_time >= self._MESSAGE_SECONDS:
@@ -109,7 +148,11 @@ class TestSerial:
             with open("debug.log", "a") as f:
                 f.write(f"TestSerial stream: {msg}\n")
             return msg
-        return b'Echo Last: ' + self._last_command
+        return b'Echo: ' + self._last_command
+
+    def send_and_read(self, raw_command):
+        self._last_command = raw_command.encode()
+        return f"Echo: {raw_command}"
     
     def write(self, command):
         self._last_command = command
