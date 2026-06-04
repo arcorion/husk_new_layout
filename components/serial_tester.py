@@ -19,12 +19,12 @@ class SerialTesterApp(App):
         margin: 0 2;
     }
     ListView { border: solid purple; }
-    Log { border: solid purple; }
+    Log { border: solid gold; }
     #button_container {
         align-horizontal: center;
         height: auto;
     }
-    #status { border: solid gold; padding: 0 1; }
+    #status { border: solid gray; padding: 0 1; }
     """
 
     def compose(self) -> ComposeResult:
