@@ -39,6 +39,7 @@ The actual script is started with:
 `python3 huskontroller.py`
 
 If you try to start it without having the necessary serial ports attached and configured, it may raise an error that it can't find the serial port. There is a test device called "test_serial.py" which may be used if needed for testing. I've updated the code so that it should fall back to the test device in the most likely exception cases. In which case, it will just output the commands sent to the console.
+
 ## Requirements to run the serial_tester.py tool
 The serial tester uses a simple TUI interface to easily run test commands and receive responses.
 It requires being run in a python venv Virtual Environmment. Usually I run this in the project directory and run: (don't just copy and paste this - you'll deactivate the venv)
