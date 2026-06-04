@@ -1,5 +1,6 @@
 import serial
 import threading
+import time
 
 from serial.tools import list_ports
 
@@ -88,10 +89,26 @@ class Commander:
             print(f'Unsupported command: {command}')
 
 class TestSerial:
+    _STREAM_MESSAGES = [b'Inp1\n', b'Vol063\n', b'JustTesting1\n']
+    _MESSAGE_SECONDS = 3
+
     def __init__(self):
         self._last_command = b'TestSerial Initialized'
+        self._last_stream_time = time.time()
+        self._stream_index = 0
+
+    @property
+    def in_waiting(self):
+        return 1 if time.time() - self._last_stream_time >= self._MESSAGE_SECONDS else 0
 
     def readline(self):
+        if time.time() - self._last_stream_time >= self._MESSAGE_SECONDS:
+            self._last_stream_time = time.time()
+            msg = self._STREAM_MESSAGES[self._stream_index % len(self._STREAM_MESSAGES)]
+            self._stream_index += 1
+            with open("debug.log", "a") as f:
+                f.write(f"TestSerial stream: {msg}\n")
+            return msg
         return b'Echo Last: ' + self._last_command
     
     def write(self, command):
