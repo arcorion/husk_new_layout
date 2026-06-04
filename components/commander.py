@@ -103,12 +103,13 @@ class Commander:
         try:
             response = self._device.readline().decode().strip()
             if response:
-                self.log.info(f"Received: '{response}'")
+                src = getattr(self, '_last_source', 'system')
+                self.log.info(f"Received: '{response}'", extra={"source": src})
             return response
         except Exception:
             return None
 
-    def send_and_read(self, raw_command):
+    def send_and_read(self, raw_command, source=None):
         acquired = self._lock.acquire(blocking=False)
         if not acquired:
             return None
@@ -116,7 +117,7 @@ class Commander:
             self._device.write(raw_command.encode())
             response = self._device.readline().decode().strip()
             if response:
-                self.log.info(f"Received: '{response}'")
+                self.log.info(f"Received: '{response}'", extra={"source": source or self._last_source or "system"})
             return response
         except Exception:
             return None
@@ -139,6 +140,8 @@ class Commander:
                 self.log.info(f"Custom '{command}'", extra={"source": "custom"})
             else:
                 self.log.warning(f"Unsupported: '{command}'")
+            self._last_source = src
+            
 
 class TestSerial:
     _STREAM_MESSAGES = [b'Inp1\n', b'Vol063\n', b'JustTesting1\n']
@@ -165,9 +168,6 @@ class TestSerial:
             return msg
         return b'Echo: ' + self._last_command
 
-    def send_and_read(self, raw_command):
-        self._last_command = raw_command.encode()
-        return f"Echo: {raw_command}"
     
     def write(self, command):
         self._last_command = command

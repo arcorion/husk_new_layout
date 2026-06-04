@@ -39,18 +39,16 @@ class DeviceMonitor:
 
     def _ping_all(self):
         for device, raw_cmd in self.PING_COMMANDS.items():
-            if raw_cmd is None:
-                continue
-            response = self.commander.send_and_read(raw_cmd)
+            response = self.commander.send_and_read(raw_cmd, source=device)
             if response is None:
-                self.log.info(
-                    f"{device} ping skipped (port busy or error)",
-                    extra={"source": "monitor"}
-                )
+                self.log.info(f"{device} ping skipped (port busy or error)", extra={"source": "monitor"})
             else:
-                self.log.info(
-                    f"{device} ping → {response!r}",
-                    extra={"source": "monitor"}
-                )
+                lines = [response]
+                while getattr(self.commander._device, 'in_waiting', 0) > 0:
+                    line = self.commander.read_response()
+                    if line:
+                        lines.append(line)
+                full_response = '\n'.join(lines)
+                self.log.info(f"{device} ping -> {full_response!r}", extra={"source": "monitor"})
                 if self.on_ping:
                     self.on_ping(device, response)

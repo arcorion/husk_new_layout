@@ -4,7 +4,7 @@ from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window
 from kivy.event import EventDispatcher
-from kivy.graphics import *
+#from kivy.graphics import *
 from kivy.lang.builder import Builder
 from kivy.properties import ObjectProperty
 from kivy.uix.button import Button
@@ -61,6 +61,7 @@ class InputButton(HuskyButton):
         super(InputButton, self).__init__(**kwargs)
         self.allow_no_selection = False
         self.app = App.get_running_app()
+        assert self.app is not None
     
     def select_input(self, input_name):
         getattr(self.app.controller, f'set_input_{input_name}')()
@@ -94,6 +95,7 @@ class PowerButton(HuskyButton):
     def __init__(self, **kwargs):
         super(PowerButton, self).__init__(**kwargs)
         self.app = App.get_running_app()
+        assert self.app is not None
         self.allow_no_selection = False
 
     def call_unset_blank(self, timer):
@@ -107,6 +109,7 @@ class PowerOnButton(PowerButton):
     def __init__(self, **kwargs):
         super(PowerOnButton, self).__init__(**kwargs)
         self.app = App.get_running_app()
+        assert self.app is not None
 
     def start_projector(self):
         self.app.start_projector()
@@ -116,6 +119,7 @@ class PowerOffButton(PowerButton):
     def __init__(self, **kwargs):
         super(PowerOffButton, self).__init__(**kwargs)
         self.app = App.get_running_app()
+        assert self.app is not None
 
     def stop_projector(self):
         Clock.schedule_once(self.call_unset_blank, 1)
@@ -129,6 +133,7 @@ class PowerPopup(Popup):
     def __init__(self, on_off_text="on", input_name=None, **kwargs):
         super(PowerPopup, self).__init__(**kwargs)
         self.app = App.get_running_app()
+        
         self.auto_dismiss = False
         self.background = ''
         self.background_color = (232/255, 211/255, 162/255, 1)
@@ -196,7 +201,3 @@ class HuskontrollerApp(App):
         Clock.schedule_once(lambda dt: self.image.unset_freeze(), 10)
         if input_name:
             Clock.schedule_once(lambda dt: getattr(self.controller, f'set_input_{input_name}')(), self.controller.PROJECTOR_WAIT)
-
-
-if __name__ == '__main__':
-    HuskontrollerApp().run()

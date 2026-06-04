@@ -87,7 +87,7 @@ class SerialTesterApp(App):
             (self.query_one("#stream", Log)
                 .write_line(f"[startup] No init message from device"))
         self._monitor = DeviceMonitor(
-            interval=30,
+            interval=10,
             on_ping=lambda device, response: self.call_from_thread(
                 self._post_to_stream, f"[monitor] {device}: {response}"
             )
