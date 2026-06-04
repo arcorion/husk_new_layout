@@ -136,12 +136,10 @@ class Commander:
                 self._last_source = src
                 self._device.write(command_string.encode())
                 self.log.info(f"Sent '{command_string}' -> {command}", extra={"source": src})
-                self.read_response()
             elif custom:
                 self._last_source = "custom"
                 self._device.write(command.encode())
                 self.log.info(f"Custom '{command}'", extra={"source": "custom"})
-                self.read_response()
             else:
                 self._last_source = "system"
                 self.log.warning(f"Unsupported: '{command}'")
