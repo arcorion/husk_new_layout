@@ -48,7 +48,8 @@ class Commander:
             'get_volume': 'V',
             'disable_audio': '1Z',
             'enable_audio': '0Z',
-            'get_audio_status': 'Z'
+            'get_audio_status': 'Z',
+            'get_output_status': '1*I'
         }
 
         self.command_sources = {
@@ -69,6 +70,7 @@ class Commander:
             'disable_audio':      'switcher',
             'enable_audio':       'switcher',
             'get_audio_status':   'switcher',
+            'get_output_status':  'switcher'
         }
         self._initialized = True
 
