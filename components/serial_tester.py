@@ -78,10 +78,10 @@ class SerialTesterApp(App):
         self.stream_worker()
         response = self.commander.read_response()
         if response:
-            (self.query_one("#output", Log)
+            (self.query_one("#stream", Log)
                 .write_line(f"[startup] {response}"))
         else:
-            (self.query_one("#output", Log)
+            (self.query_one("#stream", Log)
                 .write_line(f"[startup] No init message from device"))
 
     def on_unmount(self) -> None:
