@@ -82,7 +82,7 @@ class Commander:
 
         try:
             port_list = [p for p in list_ports.comports() if 'com0com' not in p.description.lower()]
-            self._device = serial.Serial(port_list[0].device, 9600, timeout=2)
+            self._device = serial.Serial(port_list[0].device, 9600, timeout=0.25)
             self.log.info(f"Device {self._device} created.")
         except (serial.SerialException, IndexError):
             self.log.warning("Error opening serial port - using TestSerial.")
@@ -136,10 +136,12 @@ class Commander:
                 self._last_source = src
                 self._device.write(command_string.encode())
                 self.log.info(f"Sent '{command_string}' -> {command}", extra={"source": src})
+                self.read_response()
             elif custom:
                 self._last_source = "custom"
                 self._device.write(command.encode())
                 self.log.info(f"Custom '{command}'", extra={"source": "custom"})
+                self.read_response()
             else:
                 self._last_source = "system"
                 self.log.warning(f"Unsupported: '{command}'")
