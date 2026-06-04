@@ -170,6 +170,8 @@ class TestSerial:
             return msg
         return b'Echo: ' + self._last_command
 
+    def reset_input_buffer(self):
+        pass
     
     def write(self, command):
         self._last_command = command

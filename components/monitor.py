@@ -39,6 +39,8 @@ class DeviceMonitor:
 
     def _ping_all(self):
         for device, raw_cmd in self.PING_COMMANDS.items():
+            if hasattr(self.commander._device, 'reset_input_buffer'):
+                self.commander._device.reset_input_buffer()
             response = self.commander.send_and_read(raw_cmd, source=device)
             if response is None:
                 self.log.info(f"{device} ping skipped (port busy or error)", extra={"source": "monitor"})
