@@ -18,8 +18,8 @@ class SerialTesterApp(App):
     Button {
         margin: 0 2;
     }
-    ListView { border: solid purple; }
-    Log { border: solid gold; }
+    ListView { border: solid gold; }
+    Log { border: solid purple; }
     #button_container {
         align-horizontal: center;
         height: auto;
