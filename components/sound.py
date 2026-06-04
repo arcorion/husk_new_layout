@@ -30,7 +30,6 @@ class Sound(Component, EventDispatcher):
         """
         self.mute = True
         self.commander.send_command("disable_audio")
-        print("sent mute")
         self.set_clock()
 
     def unset_mute(self):

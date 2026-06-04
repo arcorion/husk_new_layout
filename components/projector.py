@@ -61,4 +61,4 @@ class Projector(Component, EventDispatcher):
             case "off":
                 Clock.schedule_once(lambda dt: setattr(self, 'power_state', False))
             case _:
-                print("Error changing projector power state in Projector module.")
+                self.commander.log.error("Error changing projector power state in Projector module.")
