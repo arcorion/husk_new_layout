@@ -32,6 +32,7 @@ class Commander:
         # When updating the command list, make sure to update command
         # sources as well.
         self.command_list = {
+            'get_general_information': '1*I',
             'select_podium': '1!',
             'select_hdmi': '2!',
             'select_usbc': '3!',
@@ -48,11 +49,11 @@ class Commander:
             'get_volume': 'V',
             'disable_audio': '1Z',
             'enable_audio': '0Z',
-            'get_audio_status': 'Z',
-            'get_output_status': '1*I'
+            'get_audio_status': 'Z'
         }
 
         self.command_sources = {
+            'get_general_information':  'switcher',
             'select_podium':      'switcher',
             'select_hdmi':        'switcher',
             'select_usbc':        'switcher',
@@ -69,8 +70,7 @@ class Commander:
             'get_volume':         'switcher',
             'disable_audio':      'switcher',
             'enable_audio':       'switcher',
-            'get_audio_status':   'switcher',
-            'get_output_status':  'switcher'
+            'get_audio_status':   'switcher'
         }
         self._initialized = True
 
