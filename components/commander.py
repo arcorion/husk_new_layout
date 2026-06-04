@@ -2,6 +2,7 @@ import serial
 import threading
 import time
 
+from components.logger import get_logger
 from serial.tools import list_ports
 
 class Commander:
@@ -26,7 +27,8 @@ class Commander:
     def __init__(self):
         if self._initialized:
             return
-
+        
+        self.log = get_logger()
         # When updating the command list, make sure to update command
         # sources as well.
         self.command_list = {
@@ -73,9 +75,9 @@ class Commander:
         try:
             port_list = [p for p in list_ports.comports() if 'com0com' not in p.description.lower()]
             self._device = serial.Serial(port_list[0].device, 9600, timeout=2)
-            print(f'Device {self._device} created.')
+            self.log.info(f"Device {self._device} created.")
         except (serial.SerialException, IndexError):
-            print(f'Error opening connection to serial port\nUsing test serial.')
+            self.log.warning("Error opening serial port - using TestSerial.")
             self._device = TestSerial()
 
     @property
@@ -115,13 +117,14 @@ class Commander:
         with self._lock:
             command_string = self.command_list.get(command)
             if command_string:
+                src = self.command_sources.get(command, "unknown")
                 self._device.write(command_string.encode())
-                print(f'Command sent: {command_string}')
-            elif custom == True:
+                self.log.info(f"Sent '{command_string}' -> {command}", extra={"source": src})
+            elif custom:
                 self._device.write(command.encode())
-                print(f'Custom command sent: {command}')
+                self.log.info(f"Custom '{command}'")
             else:
-                print(f'Unsupported command: {command}')
+                self.log.warning(f"Unsupported: '{command}'")
 
 class TestSerial:
     _STREAM_MESSAGES = [b'Inp1\n', b'Vol063\n', b'JustTesting1\n']
@@ -145,8 +148,6 @@ class TestSerial:
             self._last_stream_time = time.time()
             msg = self._STREAM_MESSAGES[self._stream_index % len(self._STREAM_MESSAGES)]
             self._stream_index += 1
-            with open("debug.log", "a") as f:
-                f.write(f"TestSerial stream: {msg}\n")
             return msg
         return b'Echo: ' + self._last_command
 
