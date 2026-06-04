@@ -3,6 +3,7 @@ from time import sleep
 from components.commander import Commander
 from components.image import Image
 from components.input import Input
+from components.monitor import DeviceMonitor
 from components.projector import Projector
 from components.sound import Sound
 from gui import HuskontrollerApp
@@ -29,9 +30,11 @@ class Huskontroller(EventDispatcher):
             "sound" : self.sound,
             "controller" : self
         }
-        
+        self._monitor = DeviceMonitor(interval=30)
+        self._monitor.start()
         self.touchscreen = HuskontrollerApp(self.components_dictionary)
         self.touchscreen.run()
+        self._monitor.stop()
 
     def set_initial_state(self):
         """

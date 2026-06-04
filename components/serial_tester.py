@@ -5,6 +5,7 @@ import sys
 import threading
 
 from commander import Commander
+from monitor import DeviceMonitor
 from pathlib import Path
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
@@ -27,6 +28,7 @@ class SerialTesterApp(App):
     }
     #status { border: solid gray; padding: 0 1; }
     """
+    _monitor = None
 
     def compose(self) -> ComposeResult:
         self._stream_paused = threading.Event()
@@ -84,9 +86,18 @@ class SerialTesterApp(App):
         else:
             (self.query_one("#stream", Log)
                 .write_line(f"[startup] No init message from device"))
+        self._monitor = DeviceMonitor(
+            interval=30,
+            on_ping=lambda device, response: self.call_from_thread(
+                self._post_to_stream, f"[monitor] {device}: {response}"
+            )
+        )
+        self._monitor.start()
 
     def on_unmount(self) -> None:
         self._stream_stopped.set()
+        if self._monitor:
+            self._monitor.stop()
 
     @work(thread=True)
     def stream_worker(self) -> None:

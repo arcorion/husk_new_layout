@@ -12,7 +12,8 @@ class DeviceMonitor:
         'switcher': '1*I',  # Extron: returns general info (input type, mute status, frequencies)
     }
 
-    def __init__(self, interval=30):
+    def __init__(self, interval=30, on_ping=None):
+        self.on_ping = on_ping
         self.interval = interval
         self._stop_event = threading.Event()
         self._thread = None
@@ -51,3 +52,5 @@ class DeviceMonitor:
                     f"{device} ping → {response!r}",
                     extra={"source": "monitor"}
                 )
+                if self.on_ping:
+                    self.on_ping(device, response)

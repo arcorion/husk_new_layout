@@ -136,7 +136,7 @@ class Commander:
                 self.log.info(f"Sent '{command_string}' -> {command}", extra={"source": src})
             elif custom:
                 self._device.write(command.encode())
-                self.log.info(f"Custom '{command}'")
+                self.log.info(f"Custom '{command}'", extra={"source": "custom"})
             else:
                 self.log.warning(f"Unsupported: '{command}'")
 
