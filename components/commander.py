@@ -1,9 +1,15 @@
 import serial
+import sys
 import threading
 import time
 
-from logger import get_logger
+from pathlib import Path
 from serial.tools import list_ports
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from components.logger import get_logger
+
 
 class Commander:
     """
