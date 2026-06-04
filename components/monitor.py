@@ -43,12 +43,6 @@ class DeviceMonitor:
             if response is None:
                 self.log.info(f"{device} ping skipped (port busy or error)", extra={"source": "monitor"})
             else:
-                lines = [response]
-                while getattr(self.commander._device, 'in_waiting', 0) > 0:
-                    line = self.commander.read_response()
-                    if line:
-                        lines.append(line)
-                full_response = '\n'.join(lines)
-                self.log.info(f"{device} ping -> {full_response!r}", extra={"source": "monitor"})
+                self.log.info(f"{device} ping -> {response!r}", extra={"source": "monitor"})
                 if self.on_ping:
                     self.on_ping(device, response)
