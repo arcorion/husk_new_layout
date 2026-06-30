@@ -28,6 +28,8 @@ class Projector(Component, EventDispatcher):
         self.commander.send_command("disable_projector")
         sleep(0.5)
         self.commander.send_command("disable_projector")
+        sleep(0.5)
+        self.commander.send_command("disable_projector")        
         self.set_clock()
 
     def enable(self):
@@ -35,6 +37,8 @@ class Projector(Component, EventDispatcher):
         Command function, sets projector to on and sends command.
         """
         self.set_state("on")
+        self.commander.send_command("enable_projector")
+        sleep(0.5)
         self.commander.send_command("enable_projector")
         sleep(0.5)
         self.commander.send_command("enable_projector")
