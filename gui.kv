@@ -32,14 +32,14 @@
                 background_down: 'images/buttons/on/projectoron.png'
                 id: power
                 group: 'power_buttons'
-                on_state: self.start_projector() if (self.state == 'down') else print()
+                on_state: self.start_projector() if (self.state == 'down' and app.manager.current == 'main') else print()
                 state: 'down' if app.projector.power_state == True else 'normal'
             PowerOffButton:
                 background_normal: 'images/buttons/off/projectoroff.png'
                 background_down: 'images/buttons/on/projectoroff.png'
                 id: power_off
                 group: 'power_buttons'
-                on_state: self.stop_projector() if (self.state == 'down') else print()
+                on_state: self.stop_projector() if (self.state == 'down' and app.manager.current == 'main') else print()
                 state: 'down' if app.projector.power_state == False else 'normal'
             HuskyButton:
                 background_normal: 'images/buttons/off/blank.png'
@@ -131,3 +131,57 @@
             pos: self.pos
             size: self.size
             source: 'images/background.png'
+    BoxLayout:
+        orientation: 'vertical'
+        pos: 15, 15
+        size: 770, 450
+        size_hint: None, None
+        spacing: 10
+        padding: 10
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 0.85
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 80
+            spacing: 10
+            Button:
+                text: 'Projector On\n(raw)'
+                halign: 'center'
+                on_release: app.projector.test_enable()
+            Button:
+                text: 'Projector Off\n(raw)'
+                halign: 'center'
+                on_release: app.projector.test_disable()
+            Button:
+                text: 'Reset\nConnection'
+                halign: 'center'
+                on_release: app.projector.commander.reconnect()
+            Button:
+                text: 'Back'
+                halign: 'center'
+                on_release: root.exit_test_mode()
+        Label:
+            text: app.projector.commander.connection_status
+            size_hint_y: None
+            height: 24
+            color: 0, 0, 0, 1
+            font_size: '14sp'
+        ScrollView:
+            id: log_scroll
+            do_scroll_x: False
+            Label:
+                id: log_lines_label
+                text: '\n'.join(app.log_lines)
+                size_hint_y: None
+                height: self.texture_size[1]
+                text_size: self.width, None
+                halign: 'left'
+                valign: 'top'
+                color: 0, 0, 0, 1
+                padding: 10, 10
+                on_texture_size: log_scroll.scroll_y = 0

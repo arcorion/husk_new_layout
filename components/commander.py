@@ -124,6 +124,24 @@ class Commander:
         finally:
             self._lock.release()
 
+    def reconnect(self):
+        """
+        Closes and reopens the current serial connection on the same
+        port. Used by test mode's "Reset Connection" button. Safe to
+        call when running against TestSerial (no real port to cycle).
+        """
+        with self._lock:
+            try:
+                self._device.close()
+            except Exception as e:
+                self.log.warning(f"Error closing device: {e}", extra={"source": "system"})
+                return
+            try:
+                self._device.open()
+                self.log.info("Serial connection reset.", extra={"source": "system"})
+            except Exception as e:
+                self.log.warning(f"Error reopening device: {e}", extra={"source": "system"})
+
     def send_command(self, command, custom=False):
         """
         Takes a command string and sends the command as an
@@ -172,7 +190,13 @@ class TestSerial:
 
     def reset_input_buffer(self):
         pass
-    
+
+    def open(self):
+        pass
+
+    def close(self):
+        pass
+
     def write(self, command):
         self._last_command = command
         print(command.decode())

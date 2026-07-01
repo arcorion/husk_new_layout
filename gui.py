@@ -1,3 +1,5 @@
+import logging
+
 from functools import partial
 from kivy.app import App
 from kivy.clock import Clock
@@ -6,7 +8,7 @@ from kivy.core.window import Window
 from kivy.event import EventDispatcher
 #from kivy.graphics import *
 from kivy.lang.builder import Builder
-from kivy.properties import ObjectProperty
+from kivy.properties import ListProperty, ObjectProperty
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
@@ -22,6 +24,7 @@ from random import choice
 from time import sleep
 import platform, threading
 
+from components.logger import get_logger
 from components.sound import Sound
 
 UNSELECTED_OPACITY = 0.7
@@ -220,6 +223,44 @@ class TestModeGesture:
             self._timeout_event = None
 
 
+class KivyLogHandler(logging.Handler):
+    """
+    Pushes formatted log records into the running App's log_lines
+    buffer, for the test-mode log pane. Records can arrive from any
+    thread (e.g. the device monitor), so the actual buffer mutation
+    is deferred to the Kivy thread via Clock.
+    """
+    MAX_LINES = 200
+
+    def __init__(self, app):
+        super().__init__()
+        self.app = app
+        self.setFormatter(logging.Formatter(
+            fmt="%(asctime)s [%(levelname)s] [%(source)s] %(message)s",
+            datefmt="%H:%M:%S"
+        ))
+        # Mirrors components/logger.py's SourceFilter - guarantees
+        # %(source)s exists even if this handler somehow runs before
+        # the file/console handlers have supplied a default.
+        self.addFilter(self._default_source)
+
+    @staticmethod
+    def _default_source(record):
+        if not hasattr(record, "source"):
+            record.source = "system"
+        return True
+
+    def emit(self, record):
+        message = self.format(record)
+        Clock.schedule_once(lambda dt: self._append(message))
+
+    def _append(self, message):
+        lines = self.app.log_lines
+        lines.append(message)
+        if len(lines) > self.MAX_LINES:
+            del lines[:len(lines) - self.MAX_LINES]
+
+
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
@@ -246,8 +287,22 @@ class TestScreen(Screen):
     def __init__(self, **kwargs):
         super(TestScreen, self).__init__(**kwargs)
 
+    def exit_test_mode(self):
+        """
+        Returns to the main interface. Resets the gesture tracker so
+        a half-finished sequence from before entering test mode can't
+        carry over and immediately re-trigger it.
+        """
+        app = App.get_running_app()
+        app.gesture.reset()
+        app.manager.current = 'main'
+
 
 class HuskontrollerApp(App):
+    # Capped rolling buffer of formatted log lines, fed by
+    # KivyLogHandler, displayed in the test-mode log pane.
+    log_lines = ListProperty([])
+
     def __init__(self, components_dictionary):
         super(HuskontrollerApp, self).__init__()
         self.image = components_dictionary["image"]
@@ -260,6 +315,7 @@ class HuskontrollerApp(App):
         self.gesture = TestModeGesture(
             on_complete=lambda: setattr(self.manager, 'current', 'test')
         )
+        get_logger().addHandler(KivyLogHandler(self))
 
     def build(self):
         Builder.load_file("gui.kv")

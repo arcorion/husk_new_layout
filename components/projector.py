@@ -44,6 +44,27 @@ class Projector(Component, EventDispatcher):
         self.commander.send_command("enable_projector")
         self.set_clock()
 
+    def test_enable(self):
+        """
+        Test-mode variant of enable(). Sends the raw command once,
+        with no retries and no delay - for bench-testing the
+        projector's response directly. Still updates power_state,
+        same as the real button.
+        """
+        self.set_state("on")
+        self.commander.send_command("enable_projector")
+        self.set_clock()
+
+    def test_disable(self):
+        """
+        Test-mode variant of disable(). Sends the raw command once,
+        with no retries and no delay. Still updates power_state,
+        same as the real button.
+        """
+        self.set_state("off")
+        self.commander.send_command("disable_projector")
+        self.set_clock()
+
     def get_power_state(self):
         """
         Return the power state string "off" or "on".
