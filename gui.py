@@ -13,6 +13,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
+from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.slider import Slider
 from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.widget import Widget
@@ -78,14 +79,15 @@ class MuteButton(ToggleButton):
             self.opacity = UNSELECTED_OPACITY
     
     def change_state(self, app):
+        main_screen = app.manager.get_screen('main')
         if (self.state == 'down'):
             app.sound.set_mute()
-            app.root.ids.audio_label.opacity = UNSELECTED_OPACITY
-            app.root.ids.volume.opacity = UNSELECTED_OPACITY
+            main_screen.ids.audio_label.opacity = UNSELECTED_OPACITY
+            main_screen.ids.volume.opacity = UNSELECTED_OPACITY
         else:
             app.sound.unset_mute()
-            app.root.ids.audio_label.opacity = SELECTED_OPACITY
-            app.root.ids.volume.opacity = SELECTED_OPACITY
+            main_screen.ids.audio_label.opacity = SELECTED_OPACITY
+            main_screen.ids.volume.opacity = SELECTED_OPACITY
 
 
 class PowerButton(HuskyButton):
@@ -166,10 +168,83 @@ class PowerPopup(Popup):
             else:
                 self.content.text = f"Powering {self.on_off_text}.\nInterface available in {self.seconds} seconds."
 
+class TestModeGesture:
+    """
+    Tracks the secret tap sequence used to enter test mode:
+    Display, Input, Audio, Input, Display labels, then a tap
+    on the open background (Dubs) to the right of the controls.
 
-class TouchPanel(FloatLayout):
+    Resets to the start if a step arrives out of order, or if
+    too much time passes between taps.
+    """
+    TIMEOUT = 3.0  # seconds allowed between taps before resetting
+
+    def __init__(self, on_complete):
+        self.sequence = ['display', 'input', 'audio', 'input', 'display', 'dubs']
+        self.on_complete = on_complete
+        self._index = 0
+        self._timeout_event = None
+
+    def register(self, step):
+        expected = self.sequence[self._index]
+
+        if step == expected:
+            self._index += 1
+            self._bump_timeout()
+            if self._index == len(self.sequence):
+                self._complete()
+        else:
+            # A fumbled attempt can restart immediately if the
+            # mismatched tap happens to equal the first step.
+            self._index = 1 if step == self.sequence[0] else 0
+            if self._index:
+                self._bump_timeout()
+            else:
+                self._cancel_timeout()
+
+    def reset(self):
+        self._index = 0
+        self._cancel_timeout()
+
+    def _complete(self):
+        self.reset()
+        self.on_complete()
+
+    def _bump_timeout(self):
+        self._cancel_timeout()
+        self._timeout_event = Clock.schedule_once(lambda dt: self.reset(), self.TIMEOUT)
+
+    def _cancel_timeout(self):
+        if self._timeout_event:
+            self._timeout_event.cancel()
+            self._timeout_event = None
+
+
+class MainScreen(Screen):
     def __init__(self, **kwargs):
-        super(TouchPanel, self).__init__(**kwargs)
+        super(MainScreen, self).__init__(**kwargs)
+
+    def on_touch_down(self, touch):
+        handled = super().on_touch_down(touch)
+        app = App.get_running_app()
+
+        if not handled and touch.x > self.ids.controls_box.right:
+            app.gesture.register('dubs')
+            return True
+
+        gesture_labels = (
+            self.ids.display_label,
+            self.ids.input_label,
+            self.ids.audio_label,
+        )
+        if not any(label.collide_point(*touch.pos) for label in gesture_labels):
+            app.gesture.reset()
+
+        return handled
+
+class TestScreen(Screen):
+    def __init__(self, **kwargs):
+        super(TestScreen, self).__init__(**kwargs)
 
 
 class HuskontrollerApp(App):
@@ -181,10 +256,18 @@ class HuskontrollerApp(App):
         self.sound = components_dictionary["sound"]
         self.controller = components_dictionary["controller"]
         self.controller.set_initial_state()
+        self.manager = ScreenManager()
+        self.gesture = TestModeGesture(
+            on_complete=lambda: setattr(self.manager, 'current', 'test')
+        )
 
     def build(self):
         Builder.load_file("gui.kv")
-        return TouchPanel()
+        manager = self.manager
+        manager.add_widget(MainScreen(name='main'))
+        manager.add_widget(TestScreen(name='test'))
+
+        return manager
     
     def start_projector(self, input_name=None):
         """

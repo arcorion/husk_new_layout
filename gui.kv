@@ -1,7 +1,7 @@
 #:import Clock kivy.clock.Clock
 #:import threading threading
 #:import partial functools.partial
-<Touchpanel>:
+<MainScreen>:
     canvas:
         Color:
             rgba: 1, 1, 1, 1
@@ -12,6 +12,7 @@
     # Controls
     BoxLayout:
         cols: 3
+        id: controls_box
         orientation: 'horizontal'
         pos: 15, 50
         rows: 5
@@ -24,6 +25,7 @@
             Button:
                 background_normal: 'images/labels/display-label.png'
                 background_down: 'images/labels/display-label.png'
+                on_release: app.gesture.register('display')
                 id: display_label
             PowerOnButton:
                 background_normal: 'images/buttons/off/projectoron.png'
@@ -58,6 +60,7 @@
             Button:
                 background_normal: 'images/labels/input-label.png'
                 background_down: 'images/labels/input-label.png'
+                on_release: app.gesture.register('input')
                 id: input_label
             InputButton:
                 background_normal: 'images/buttons/off/podium.png'
@@ -95,6 +98,7 @@
                 background_normal: 'images/labels/audio-label.png'
                 background_down: 'images/labels/audio-label.png'
                 id: audio_label
+                on_release: app.gesture.register('audio')
                 size_hint: 1, 0.2
             Slider:
                 background_vertical: 'images/slider/slider-background.png'
@@ -119,3 +123,11 @@
                 on_state: self.change_state(app)
                 size_hint: 1, 0.2
                 state: 'down' if app.sound.mute else 'normal'
+<TestScreen>:
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: 'images/background.png'
